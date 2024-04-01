@@ -10,7 +10,7 @@
 ## SQL Queries:
 - <a href="SQL queries/queries_1-5.sql" target="_blank">For 1-5</a>
 - <a href="SQL queries/queries_6-8.sql" target="_blank">For 6-8</a>
-- <a href="SQL queries/queries_9-11.sql" target="_blank">For 9-11</a>
+- <a href="SQL queries/queries-9-11.sql" target="_blank">For 9-11</a>
 
 ## Insights:
 1. Who is the senior most employee based on job title?
