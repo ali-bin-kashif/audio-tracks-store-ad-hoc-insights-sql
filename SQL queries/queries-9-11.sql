@@ -28,7 +28,7 @@ SELECT
 	c.first_name,
 	c.last_name,
 	t.artist_name,
-	ROUND(SUM(total)::numeric,2) AS total_spent
+	ROUND(SUM(c.unit_price*c.quantity)::numeric,2) AS total_spent
 FROM customer_invoice AS c
 JOIN track_details AS t
 USING(track_id)
