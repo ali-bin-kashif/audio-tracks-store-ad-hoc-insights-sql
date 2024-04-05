@@ -41,29 +41,32 @@ ORDER BY total_spent DESC;
 with the highest amount of purchases. Write a query that returns each country along with the top Genre. For countries where 
 the maximum number of purchases is shared return all Genres. */
 
-/*Method: 
-- First joined invoice, invoice_line, track and genre table on respective id columns
-- Grouped the data by country and genre
-- Counted the invoice lines to calculate total purchases
-- Added ranking at country level on total purchases, so that max will be ranked as 1
-- Fitered the data where rank is 1, in this way We determine the most popular genre as the genre 
-with the highest amount of purchases.*/
 
+-- Using subquery in FROM clause
 SELECT *
 FROM
 (
 	SELECT
 		billing_country,
 		genre.name AS genre,
+		-- Count the invoice lines to calculate total purchases
 		COUNT(invoice_line_id) AS total_purchases,
-		RANK() OVER(PARTITION BY billing_country ORDER BY COUNT(invoice_line_id) DESC) AS ranking
+		-- Add ranking at country level on total purchases, so that max will be ranked as 1
+		RANK() OVER(PARTITION BY billing_country
+			ORDER BY COUNT(invoice_line_id) DESC) AS ranking
+
+	-- Join invoice, invoice_line, track and genre table on respective id columns
 	FROM invoice
 	JOIN invoice_line USING(invoice_id)
 	JOIN track USING(track_id)
 	JOIN genre USING(genre_id)
+
+	-- Group the data by country and genre
 	GROUP BY genre.name, billing_country
 	ORDER by billing_country, total_purchases DESC
 )
+
+-- Fitered the data where rank is 1, in this way We determine the most popular genre as the genre with the highest amount of purchases.
 WHERE ranking = 1;
 
 /*
@@ -73,6 +76,7 @@ much they spent. For countries where the top amount spent is shared, provide all
 customers who spent this amount
 */
 
+-- Creating CTE for customer rankings
 WITH customer_rankings_by_country AS
 (
 	SELECT 
@@ -80,7 +84,9 @@ WITH customer_rankings_by_country AS
 		customer_id,
 		first_name,
 		last_name,
+		-- Summing spent amount
 		SUM(total) AS total_spent,
+		-- Ranking by total spent by country level
 		RANK() OVER(PARTITION BY country
 					ORDER BY SUM(total) DESC) AS ranking
 	FROM invoice
@@ -89,6 +95,7 @@ WITH customer_rankings_by_country AS
 	ORDER BY country, total_spent DESC
 )
 
+-- Selecting only rows with ranking 1, so that top customers are selected
 SELECT
 	country,
 	customer_id,
